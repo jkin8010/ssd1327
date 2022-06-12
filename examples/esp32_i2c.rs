@@ -18,14 +18,12 @@
 //!
 //! Run on a Blue Pill with `cargo run --example esp32_i2c`.
 
-use std::thread;
-use std::time::Duration;
 use ssd1327::{prelude::*, I2CDisplayInterface, Ssd1327};
 use esp_idf_hal::{self, peripherals::Peripherals, prelude::*};
 use tinybmp::Bmp;
 use embedded_graphics::{image::Image, pixelcolor::Rgb565, prelude::*};
 
-fn main() -> anyhow::Result<()> {
+fn main() -> ! {
     // Temporary. Will disappear once ESP-IDF 4.4 is released, but for now it is necessary to call this function once,
     // or else some patches to the runtime implemented by esp-idf-sys might not link properly.
     esp_idf_sys::link_patches();
@@ -61,19 +59,5 @@ fn main() -> anyhow::Result<()> {
     
     display.flush().unwrap();
 
-    let mut count_down = 100;
-    loop {
-        if count_down == 0 {
-            break;
-        }
-        println!("CountDown {}", count_down);
-        count_down -= 1;
-        
-        // we are using thread::sleep here to make sure the watchdog isn't triggered
-        thread::sleep(Duration::from_millis(1000));
-    }
-
-    println!("Exiting");
-
-    Ok(())
+    loop {}
 }
