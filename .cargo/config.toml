@@ -1,0 +1,23 @@
+# [target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# runner = "probe-run --chip STM32F103C8"
+# rustflags = [
+#   "-C", "link-arg=-Tlink.x",
+# ]
+
+# [build]
+# target = "thumbv7m-none-eabi"
+[build]
+# Uncomment the relevant target for your chip here (ESP32, ESP32-S2, ESP32-S3 or ESP32-C3)
+target = "xtensa-esp32-espidf"
+
+[target.xtensa-esp32-espidf]
+linker = "ldproxy"
+
+[unstable]
+# build-std = ["core", "alloc", "panic_abort"]
+build-std = ["std", "panic_abort"]
+
+[env]
+# Note: these variables are not used when using pio builder
+# Enables the esp-idf-sys "native" build feature (`cargo build --features native`) to build against ESP-IDF stable (v4.4)
+ESP_IDF_VERSION = { value = "branch:release/v4.4" }

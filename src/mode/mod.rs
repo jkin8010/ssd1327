@@ -3,7 +3,7 @@
 mod buffered_graphics;
 mod terminal;
 
-use crate::{command::AddrMode, rotation::DisplayRotation, size::DisplaySize, Ssd1306};
+use crate::{rotation::DisplayRotation, size::DisplaySize, Ssd1327};
 pub use buffered_graphics::*;
 use display_interface::{DisplayError, WriteOnlyDataCommand};
 pub use terminal::*;
@@ -20,26 +20,25 @@ pub trait DisplayConfig {
     fn init(&mut self) -> Result<(), Self::Error>;
 }
 
-/// A mode with no additional functionality beyond that provided by the base [`Ssd1306`] struct.
+/// A mode with no additional functionality beyond that provided by the base [`Ssd1327`] struct.
 #[derive(Debug, Copy, Clone)]
 pub struct BasicMode;
 
-impl<DI, SIZE> Ssd1306<DI, SIZE, BasicMode>
+impl<DI, SIZE> Ssd1327<DI, SIZE, BasicMode>
 where
     DI: WriteOnlyDataCommand,
     SIZE: DisplaySize,
 {
     /// Clear the display.
     pub fn clear(&mut self) -> Result<(), DisplayError> {
-        self.set_draw_area((0, 0), self.dimensions())?;
+        println!("basicMode clear");
+        self.set_draw_area((1, 1), (128, 128))?;
 
-        // TODO: If const generics allows this, replace `1024` with computed W x H value for current
-        // `SIZE`.
-        self.draw(&[0u8; 1024])
+        self.draw(&[0u8; 2048])
     }
 }
 
-impl<DI, SIZE> DisplayConfig for Ssd1306<DI, SIZE, BasicMode>
+impl<DI, SIZE> DisplayConfig for Ssd1327<DI, SIZE, BasicMode>
 where
     DI: WriteOnlyDataCommand,
     SIZE: DisplaySize,
@@ -53,6 +52,7 @@ where
 
     /// Initialise in horizontal addressing mode.
     fn init(&mut self) -> Result<(), DisplayError> {
-        self.init_with_addr_mode(AddrMode::Horizontal)
+        println!("basicMode init");
+        self.init_basic()
     }
 }

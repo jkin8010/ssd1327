@@ -1,19 +1,18 @@
 //! Buffered graphics mode.
 
 use crate::{
-    command::AddrMode,
     rotation::DisplayRotation,
     size::{DisplaySize, NewZeroed},
-    Ssd1306,
+    Ssd1327,
 };
 use display_interface::{DisplayError, WriteOnlyDataCommand};
 
 /// Buffered graphics mode.
 ///
 /// This mode keeps a pixel buffer in system memory, up to 1024 bytes for 128x64px displays. This
-/// buffer is drawn to by [`set_pixel`](Ssd1306::set_pixel) commands or
+/// buffer is drawn to by [`set_pixel`](Ssd1327::set_pixel) commands or
 /// [`embedded-graphics`](https://docs.rs/embedded-graphics) commands. The display can then be
-/// updated using the [`flush`](Ssd1306::flush) method.
+/// updated using the [`flush`](Ssd1327::flush) method.
 #[derive(Clone, Debug)]
 pub struct BufferedGraphicsMode<SIZE>
 where
@@ -42,7 +41,7 @@ where
     }
 }
 
-impl<DI, SIZE> DisplayConfig for Ssd1306<DI, SIZE, BufferedGraphicsMode<SIZE>>
+impl<DI, SIZE> DisplayConfig for Ssd1327<DI, SIZE, BufferedGraphicsMode<SIZE>>
 where
     DI: WriteOnlyDataCommand,
     SIZE: DisplaySize,
@@ -59,11 +58,11 @@ where
     /// Initialise and clear the display in graphics mode.
     fn init(&mut self) -> Result<(), DisplayError> {
         self.clear();
-        self.init_with_addr_mode(AddrMode::Horizontal)
+        self.init_basic()
     }
 }
 
-impl<DI, SIZE> Ssd1306<DI, SIZE, BufferedGraphicsMode<SIZE>>
+impl<DI, SIZE> Ssd1327<DI, SIZE, BufferedGraphicsMode<SIZE>>
 where
     DI: WriteOnlyDataCommand,
     SIZE: DisplaySize,
@@ -76,9 +75,9 @@ where
 
         let (width, height) = self.dimensions();
         self.mode.min_x = 0;
-        self.mode.max_x = width - 1;
+        self.mode.max_x = width;
         self.mode.min_y = 0;
-        self.mode.max_y = height - 1;
+        self.mode.max_y = height;
     }
 
     /// Write out data to a display.
@@ -202,7 +201,7 @@ use embedded_graphics_core::{
 use super::DisplayConfig;
 
 #[cfg(feature = "graphics")]
-impl<DI, SIZE> DrawTarget for Ssd1306<DI, SIZE, BufferedGraphicsMode<SIZE>>
+impl<DI, SIZE> DrawTarget for Ssd1327<DI, SIZE, BufferedGraphicsMode<SIZE>>
 where
     DI: WriteOnlyDataCommand,
     SIZE: DisplaySize,
@@ -228,7 +227,7 @@ where
 }
 
 #[cfg(feature = "graphics")]
-impl<DI, SIZE> OriginDimensions for Ssd1306<DI, SIZE, BufferedGraphicsMode<SIZE>>
+impl<DI, SIZE> OriginDimensions for Ssd1327<DI, SIZE, BufferedGraphicsMode<SIZE>>
 where
     DI: WriteOnlyDataCommand,
     SIZE: DisplaySize,

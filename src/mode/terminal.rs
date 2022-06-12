@@ -1,4 +1,4 @@
-use crate::{command::AddrMode, mode::DisplayConfig, rotation::DisplayRotation, size::*, Ssd1306};
+use crate::{mode::DisplayConfig, rotation::DisplayRotation, size::*, Ssd1327};
 use core::{cmp::min, fmt};
 use display_interface::{DisplayError, WriteOnlyDataCommand};
 
@@ -136,7 +136,7 @@ impl TerminalMode {
     }
 }
 
-impl<DI, SIZE> DisplayConfig for Ssd1306<DI, SIZE, TerminalMode>
+impl<DI, SIZE> DisplayConfig for Ssd1327<DI, SIZE, TerminalMode>
 where
     DI: WriteOnlyDataCommand,
     SIZE: TerminalDisplaySize,
@@ -156,33 +156,23 @@ where
     /// column 0 on the left and column _(SIZE::Width::U8 - 1)_ on the right, but no automatic line
     /// wrapping.
     fn init(&mut self) -> Result<(), TerminalModeError> {
-        self.init_with_addr_mode(AddrMode::Page).terminal_err()?;
+        self.init_basic().terminal_err()?;
         self.reset_pos()?;
         Ok(())
     }
 }
 
-impl<DI, SIZE> Ssd1306<DI, SIZE, TerminalMode>
+impl<DI, SIZE> Ssd1327<DI, SIZE, TerminalMode>
 where
     DI: WriteOnlyDataCommand,
     SIZE: TerminalDisplaySize,
 {
     /// Clear the display and reset the cursor to the top left corner
     pub fn clear(&mut self) -> Result<(), TerminalModeError> {
-        // Let the chip handle line wrapping so we can fill the screen with blanks faster
-        self.set_addr_mode(AddrMode::Horizontal).terminal_err()?;
-
-        let offset_x = match self.rotation() {
-            DisplayRotation::Rotate0 | DisplayRotation::Rotate270 => SIZE::OFFSETX,
-            DisplayRotation::Rotate180 | DisplayRotation::Rotate90 => {
-                // If segment remapping is flipped, we need to calculate
-                // the offset from the other edge of the display.
-                SIZE::DRIVER_COLS - SIZE::WIDTH - SIZE::OFFSETX
-            }
-        };
+        // let offset_x = 0;
         self.set_draw_area(
-            (offset_x, SIZE::OFFSETY),
-            (SIZE::WIDTH + offset_x, SIZE::HEIGHT + SIZE::OFFSETY),
+            (0, SIZE::OFFSETY),
+            (SIZE::WIDTH + 0, SIZE::HEIGHT + SIZE::OFFSETY),
         )
         .terminal_err()?;
 
@@ -191,8 +181,6 @@ where
             self.draw(&[0; 8]).terminal_err()?;
         }
 
-        // But for normal operation we manage the line wrapping
-        self.set_addr_mode(AddrMode::Page).terminal_err()?;
         self.reset_pos()?;
 
         Ok(())
@@ -426,7 +414,7 @@ where
     }
 }
 
-impl<DI, SIZE> core::fmt::Write for Ssd1306<DI, SIZE, TerminalMode>
+impl<DI, SIZE> core::fmt::Write for Ssd1327<DI, SIZE, TerminalMode>
 where
     DI: WriteOnlyDataCommand,
     SIZE: TerminalDisplaySize,

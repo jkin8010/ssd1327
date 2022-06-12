@@ -1,3 +1,4 @@
 /target/
+.embuild
 **/*.rs.bk
 Cargo.lock

@@ -43,11 +43,27 @@ pub trait DisplaySize {
     type Buffer: AsMut<[u8]> + NewZeroed;
 
     /// Send resolution and model-dependent configuration to the display
-    ///
-    /// See [`Command::ComPinConfig`](crate::Command::ComPinConfig)
-    /// and [`Command::InternalIref`](crate::Command::InternalIref)
+    /// 
+    /// Command::ColumnAddress
+    /// Command::RowAddress
+    /// Command::MultiplexRatio
     /// for more information
     fn configure(&self, iface: &mut impl WriteOnlyDataCommand) -> Result<(), DisplayError>;
+}
+
+/// Size information for the common 128x128 variants
+#[derive(Debug, Copy, Clone)]
+pub struct DisplaySize128x128;
+impl DisplaySize for DisplaySize128x128 {
+    const WIDTH: u8 = 128;
+    const HEIGHT: u8 = 128;
+    type Buffer = [u8; Self::WIDTH as usize * Self::HEIGHT as usize / 8];
+
+    fn configure(&self, iface: &mut impl WriteOnlyDataCommand) -> Result<(), DisplayError> {
+        Command::ColumnAddress(0, Self::WIDTH).send(iface)?;
+        Command::RowAddress(0, Self::HEIGHT).send(iface)?;
+        Command::MultiplexRatio(0x7F).send(iface)
+    }
 }
 
 /// Size information for the common 128x64 variants
@@ -59,7 +75,9 @@ impl DisplaySize for DisplaySize128x64 {
     type Buffer = [u8; Self::WIDTH as usize * Self::HEIGHT as usize / 8];
 
     fn configure(&self, iface: &mut impl WriteOnlyDataCommand) -> Result<(), DisplayError> {
-        Command::ComPinConfig(true, false).send(iface)
+        Command::ColumnAddress(0, Self::WIDTH).send(iface)?;
+        Command::RowAddress(0, Self::HEIGHT).send(iface)?;
+        Command::MultiplexRatio(Self::HEIGHT).send(iface)
     }
 }
 
@@ -72,7 +90,9 @@ impl DisplaySize for DisplaySize128x32 {
     type Buffer = [u8; Self::WIDTH as usize * Self::HEIGHT as usize / 8];
 
     fn configure(&self, iface: &mut impl WriteOnlyDataCommand) -> Result<(), DisplayError> {
-        Command::ComPinConfig(false, false).send(iface)
+        Command::ColumnAddress(0, Self::WIDTH).send(iface)?;
+        Command::RowAddress(0, Self::HEIGHT).send(iface)?;
+        Command::MultiplexRatio(Self::HEIGHT).send(iface)
     }
 }
 
@@ -85,7 +105,9 @@ impl DisplaySize for DisplaySize96x16 {
     type Buffer = [u8; Self::WIDTH as usize * Self::HEIGHT as usize / 8];
 
     fn configure(&self, iface: &mut impl WriteOnlyDataCommand) -> Result<(), DisplayError> {
-        Command::ComPinConfig(false, false).send(iface)
+        Command::ColumnAddress(0, Self::WIDTH).send(iface)?;
+        Command::RowAddress(0, Self::HEIGHT).send(iface)?;
+        Command::MultiplexRatio(Self::HEIGHT).send(iface)
     }
 }
 
@@ -100,8 +122,9 @@ impl DisplaySize for DisplaySize72x40 {
     type Buffer = [u8; Self::WIDTH as usize * Self::HEIGHT as usize / 8];
 
     fn configure(&self, iface: &mut impl WriteOnlyDataCommand) -> Result<(), DisplayError> {
-        Command::ComPinConfig(true, false).send(iface)?;
-        Command::InternalIref(true, true).send(iface)
+        Command::ColumnAddress(Self::OFFSETX, Self::WIDTH).send(iface)?;
+        Command::RowAddress(Self::OFFSETY, Self::HEIGHT).send(iface)?;
+        Command::MultiplexRatio(Self::HEIGHT).send(iface)
     }
 }
 
@@ -116,6 +139,8 @@ impl DisplaySize for DisplaySize64x48 {
     type Buffer = [u8; Self::WIDTH as usize * Self::HEIGHT as usize / 8];
 
     fn configure(&self, iface: &mut impl WriteOnlyDataCommand) -> Result<(), DisplayError> {
-        Command::ComPinConfig(true, false).send(iface)
+        Command::ColumnAddress(Self::OFFSETX, Self::WIDTH).send(iface)?;
+        Command::RowAddress(Self::OFFSETY, Self::HEIGHT).send(iface)?;
+        Command::MultiplexRatio(Self::HEIGHT).send(iface)
     }
 }
