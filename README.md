@@ -8,8 +8,6 @@
 
 I2C driver for the SSD1327 OLED display.
 
-Please consider [becoming a sponsor](https://github.com/sponsors/jamwaffles/) so I may continue to maintain this crate in my spare time!
-
 ## [Documentation](https://docs.rs/ssd1327)
 
 ## [Changelog](CHANGELOG.md)
