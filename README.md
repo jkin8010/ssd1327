@@ -1,4 +1,4 @@
-# SSD1306 driver
+# SSD1327 driver
 
 <!-- [![Build Status](https://circleci.com/gh/jamwaffles/ssd1306/tree/master.svg?style=shield)](https://circleci.com/gh/jamwaffles/ssd1306/tree/master)
 [![Crates.io](https://img.shields.io/crates/v/ssd1306.svg)](https://crates.io/crates/ssd1306)
