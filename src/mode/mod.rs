@@ -31,7 +31,6 @@ where
 {
     /// Clear the display.
     pub fn clear(&mut self) -> Result<(), DisplayError> {
-        println!("basicMode clear");
         self.set_draw_area((1, 1), (128, 128))?;
 
         self.draw(&[0u8; 2048])
@@ -52,7 +51,6 @@ where
 
     /// Initialise in horizontal addressing mode.
     fn init(&mut self) -> Result<(), DisplayError> {
-        println!("basicMode init");
         self.init_basic()
     }
 }

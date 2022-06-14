@@ -95,7 +95,7 @@
 //! [`BufferedGraphicsMode`]: crate::mode::BufferedGraphicsMode
 //! [`TerminalMode`]: crate::mode::TerminalMode
 
-// #![no_std]
+#![no_std]
 #![deny(missing_debug_implementations)]
 #![deny(missing_docs)]
 #![deny(warnings)]
@@ -202,7 +202,7 @@ where
     /// Initialise the display in one of the available addressing modes.
     pub fn init_basic(&mut self) -> Result<(), DisplayError> {
         let rotation = self.rotation;
-        println!("libssd1327: Initialising display with rotation {:?}", rotation);
+      
         // Initialise the display
         Command::DisplayOn(false).send(&mut self.interface)?;
         
@@ -296,29 +296,56 @@ where
 
         match rotation {
             DisplayRotation::Rotate0 => {
-                let _remap_flags = generate_remap(
+                let remap_flags = generate_remap(
+                    false,
                     false,
                     true,
+                    true,
+                    true,
                     false,
-                    true,
-                    true,
-                    true,
-                    false
+                    true
                 );
-                Command::Remap(0b0101_1100).send(&mut self.interface)?;
+                Command::Remap(remap_flags).send(&mut self.interface)?;
                 Command::DisplayStartLine(0x00).send(&mut self.interface)?;
             }
             DisplayRotation::Rotate90 => {
-                Command::Remap(0b0101_1000).send(&mut self.interface)?;
+                let remap_flags = generate_remap(
+                    false,
+                    false,
+                    true,
+                    true,
+                    true,
+                    false,
+                    true
+                );
+                Command::Remap(remap_flags).send(&mut self.interface)?;
                 Command::DisplayStartLine(0x00).send(&mut self.interface)?;
             }
             DisplayRotation::Rotate180 => {
-                Command::Remap(0b0001_0101).send(&mut self.interface)?;
+                let remap_flags = generate_remap(
+                    true,
+                    true,
+                    true,
+                    true,
+                    false,
+                    false,
+                    true
+                );
+                Command::Remap(remap_flags).send(&mut self.interface)?;
                 Command::DisplayStartLine(0x00).send(&mut self.interface)?;
             }
             DisplayRotation::Rotate270 => {
-                Command::Remap(0b0001_0111).send(&mut self.interface)?;
-                Command::DisplayStartLine(0x78).send(&mut self.interface)?;
+                let remap_flags = generate_remap(
+                    true,
+                    true,
+                    true,
+                    true,
+                    false,
+                    true,
+                    true
+                );
+                Command::Remap(remap_flags).send(&mut self.interface)?;
+                Command::DisplayStartLine(0x00).send(&mut self.interface)?;
             }
         };
 
@@ -330,19 +357,55 @@ where
         if mirror {
             match self.rotation {
                 DisplayRotation::Rotate0 => {
-                    Command::Remap(0b0101_1110).send(&mut self.interface)?;
+                    let remap_flags = generate_remap(
+                        true,
+                        true,
+                        true,
+                        true,
+                        false,
+                        false,
+                        true
+                    );
+                    Command::Remap(remap_flags).send(&mut self.interface)?;
                     Command::DisplayStartLine(0x00).send(&mut self.interface)?;
                 }
                 DisplayRotation::Rotate90 => {
-                    Command::Remap(0b0101_1000).send(&mut self.interface)?;
+                    let remap_flags = generate_remap(
+                        true,
+                        true,
+                        true,
+                        true,
+                        false,
+                        true,
+                        true
+                    );
+                    Command::Remap(remap_flags).send(&mut self.interface)?;
                     Command::DisplayStartLine(0x00).send(&mut self.interface)?;
                 }
                 DisplayRotation::Rotate180 => {
-                    Command::Remap(0b0001_0101).send(&mut self.interface)?;
+                    let remap_flags = generate_remap(
+                        false,
+                        false,
+                        true,
+                        true,
+                        true,
+                        false,
+                        true
+                    );
+                    Command::Remap(remap_flags).send(&mut self.interface)?;
                     Command::DisplayStartLine(0x00).send(&mut self.interface)?;
                 }
                 DisplayRotation::Rotate270 => {
-                    Command::Remap(0b0001_0111).send(&mut self.interface)?;
+                    let remap_flags = generate_remap(
+                        false,
+                        false,
+                        true,
+                        true,
+                        true,
+                        false,
+                        true
+                    );
+                    Command::Remap(remap_flags).send(&mut self.interface)?;
                     Command::DisplayStartLine(0x78).send(&mut self.interface)?;
                 }
             };
@@ -377,7 +440,6 @@ where
     /// Set the column address in the framebuffer of the display where any sent data should be
     /// drawn.
     pub fn set_column(&mut self, column: u8) -> Result<(), DisplayError> {
-        println!("set_column: {}", column);
         Command::ColumnAddress(column, SIZE::WIDTH - column).send(&mut self.interface)
     }
 
@@ -387,7 +449,6 @@ where
     /// Note that the parameter is in pixels, but the page will be set to the start of the 8px
     /// row which contains the passed-in row.
     pub fn set_row(&mut self, row: u8) -> Result<(), DisplayError> {
-        println!("set_row: {}", row);
         Command::RowAddress(row, SIZE::HEIGHT - row).send(&mut self.interface)
     }
 
