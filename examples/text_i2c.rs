@@ -9,8 +9,8 @@
 //!      Display -> Blue Pill
 //! (black)  GND -> GND
 //! (red)    +5V -> VCC
-//! (yellow) SDA -> PB9
-//! (green)  SCL -> PB8
+//! (yellow) SDA -> GPIO21
+//! (green)  SCL -> GPIO21
 //! ```
 //!
 //! Run on a Blue Pill with `cargo run --example text_i2c`.
