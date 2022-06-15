@@ -2,7 +2,7 @@
 
 [![Build Status](https://circleci.com/gh/jkin8010/ssd1327/tree/master.svg?style=shield)](https://circleci.com/gh/jkin8010/ssd1327/tree/master)
 [![Crates.io](https://img.shields.io/crates/v/ssd1327.svg)](https://crates.io/crates/ssd1327)
-[![Docs.rs](https://docs.rs/ssd1327/badge.svg)](https://docs.rs/ssd1327) -->
+[![Docs.rs](https://docs.rs/ssd1327/badge.svg)](https://docs.rs/ssd1327) 
 
 [![CRIUS display showing the Rust logo](readme_banner.png?raw=true)](examples/esp32_i2c.rs)
 
